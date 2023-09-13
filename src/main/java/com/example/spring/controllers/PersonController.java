@@ -18,20 +18,18 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@CrossOrigin(origins = "*", maxAge = 3600)
-@RequestMapping("/persons")
 public class PersonController {
     @Autowired
     PersonRepository personRepository;
 
-    @PostMapping("/persons")
+    @PostMapping("/people")
     public ResponseEntity<PersonModel> savePerson(@RequestBody @Valid PersonRecordDto personRecordDto) {
         var personModel = new PersonModel();
         BeanUtils.copyProperties(personRecordDto, personModel);
         return ResponseEntity.status(HttpStatus.CREATED).body(personRepository.save(personModel));
     }
 
-    @GetMapping
+    @GetMapping("/people")
     public ResponseEntity<List<PersonModel>> getAllPeople() {
         List<PersonModel> peopleList = personRepository.findAll();
         if(!peopleList.isEmpty()){
@@ -43,7 +41,7 @@ public class PersonController {
         return ResponseEntity.status(HttpStatus.OK).body(peopleList);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/people/{id}")
     public ResponseEntity<Object> getOnePerson(@PathVariable(value = "id") UUID id) {
         Optional<PersonModel> person0 = personRepository.findById(id);
         if (person0.isEmpty()) {
@@ -53,7 +51,7 @@ public class PersonController {
         return ResponseEntity.status(HttpStatus.OK).body(person0.get());
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/people/{id}")
     public ResponseEntity<Object> updatePerson(@PathVariable(value="id") UUID id,
                                                 @RequestBody @Valid PersonRecordDto personRecordDto) {
         Optional<PersonModel> person0 = personRepository.findById(id);
@@ -66,7 +64,7 @@ public class PersonController {
     }
 
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/people/{id}")
     public ResponseEntity<Object> deletePerson(@PathVariable(value="id") UUID id){
         Optional<PersonModel> person0 = personRepository.findById(id);
         if (person0.isEmpty()) {
