@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class PersonController {
         this.personService = personService;
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/people")
     public ResponseEntity<PersonModel> savePerson(@RequestBody @Valid PersonRecordDto personRecordDto) {
         var personModel = new PersonModel();
@@ -31,6 +33,7 @@ public class PersonController {
         return ResponseEntity.status(HttpStatus.CREATED).body(personService.savePerson(personModel));
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_USER')")
     @GetMapping("/people")
     public ResponseEntity<List<PersonModel>> getAllPeople() {
         List<PersonModel> peopleList = personService.findAll();
@@ -43,6 +46,7 @@ public class PersonController {
         return ResponseEntity.status(HttpStatus.OK).body(peopleList);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_USER')")
     @GetMapping("/people/{id}")
     public ResponseEntity<Object> getOnePerson(@PathVariable(value = "id") UUID id) {
         Optional<PersonModel> personModelOptional = personService.findById(id);
@@ -53,6 +57,7 @@ public class PersonController {
         return ResponseEntity.status(HttpStatus.OK).body(personModelOptional.get());
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/people/{id}")
     public ResponseEntity<Object> updatePerson(@PathVariable(value = "id") UUID id,
                                                @RequestBody @Valid PersonRecordDto personRecordDto) {
@@ -66,6 +71,7 @@ public class PersonController {
         return ResponseEntity.status(HttpStatus.OK).body(personService.savePerson(personModel));
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/people/{id}")
     public ResponseEntity<Object> deletePerson(@PathVariable(value = "id") UUID id) {
         Optional<PersonModel> personModelOptional = personService.findById(id);
